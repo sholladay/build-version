@@ -1,0 +1,51 @@
+{
+  "name": "build-version",
+  "version": "0.0.0",
+  "description": "Get a version for your build.",
+  "homepage": "https://github.com/sholladay/build-version",
+  "main": "index.js",
+  "author": {
+    "name": "Seth Holladay",
+    "url": "http://seth-holladay.com",
+    "email": "me@seth-holladay.com"
+  },
+  "scripts": {
+    "test": "xo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sholladay/build-version.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sholladay/build-version/issues",
+    "email": "me@seth-holladay.com"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "license": "MPL-2.0",
+  "files": [
+    "index.js"
+  ],
+  "devDependencies": {
+    "eslint-config-tidy": "0.3.0",
+    "xo": "0.16.0"
+  },
+  "keywords": [
+    "compile",
+    "build",
+    "builds",
+    "rev",
+    "hash",
+    "package",
+    "version",
+    "tooling"
+  ],
+  "xo": {
+    "extend": "tidy"
+  },
+  "dependencies": {
+    "head-hash": "0.1.0",
+    "read-pkg-up": "1.0.1"
+  }
+}
