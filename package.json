@@ -27,9 +27,14 @@
   "files": [
     "index.js"
   ],
+  "dependencies": {
+    "head-hash": "^0.2.0",
+    "read-pkg-up": "^1.0.1",
+    "username": "^2.2.2"
+  },
   "devDependencies": {
-    "eslint-config-tidy": "0.3.0",
-    "xo": "0.16.0"
+    "eslint-config-tidy": "^0.3.0",
+    "xo": "^0.16.0"
   },
   "keywords": [
     "compile",
@@ -43,9 +48,5 @@
   ],
   "xo": {
     "extend": "tidy"
-  },
-  "dependencies": {
-    "head-hash": "0.1.0",
-    "read-pkg-up": "1.0.1"
   }
 }
