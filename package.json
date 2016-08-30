@@ -28,7 +28,7 @@
     "index.js"
   ],
   "dependencies": {
-    "head-hash": "^0.2.0",
+    "head-hash": "^0.2.3",
     "read-pkg-up": "^1.0.1",
     "username": "^2.2.2"
   },

@@ -1,15 +1,14 @@
 'use strict';
 
-// TODO: First attempt to return the version from a release tag.
-// git describe --exact-match --dirty="+dirty"
 const { exec } = require('child_process');
 const username = require('username');
 const headHash = require('head-hash');
 const readPkgUp = require('read-pkg-up');
 
-const git = (cmd) => {
+const git = (command, option) => {
+    const config = Object.assign({}, option);
     return new Promise((resolve, reject) => {
-        exec('git ' + cmd, (err, stdout) => {
+        exec('git ' + command, { cwd : config.cwd }, (err, stdout) => {
             if (err) {
                 reject(err);
                 return;
@@ -19,14 +18,14 @@ const git = (cmd) => {
     });
 };
 
-const isDirty = () => {
-    return git('status --porcelain').then((status) => {
+const isDirty = (option) => {
+    return git('status --porcelain', option).then((status) => {
         return status !== '';
     });
 };
 
-const getTagVersion = () => {
-    return git('describe --exact-match HEAD').then((tag) => {
+const getTagVersion = (option) => {
+    return git('describe --exact-match HEAD', option).then((tag) => {
         const prefix = 'v';
         if (tag.startsWith(prefix)) {
             return tag.substring(prefix.length);
@@ -57,8 +56,8 @@ const semverDate = () => {
     ].join('') + 'Z';
 };
 
-const suffix = (version) => {
-    return isDirty().then((dirty) => {
+const suffix = (version, option) => {
+    return isDirty(option).then((dirty) => {
         if (!dirty) {
             return version;
         }
@@ -73,15 +72,21 @@ const suffix = (version) => {
     });
 };
 
-const buildVersion = () => {
-    return getTagVersion()
+const buildVersion = (option) => {
+    const config = Object.assign({}, option);
+    return getTagVersion({ cwd : config.cwd })
         .catch(() => {
-            return headHash({ short : true });
+            return headHash({
+                short : true,
+                cwd   : config.cwd
+            });
         })
         .then(
-            suffix,
+            (version) => {
+                return suffix(version, { cwd : config.cwd });
+            },
             () => {
-                return readPkgUp().then((data) => {
+                return readPkgUp({ cwd : config.cwd }).then((data) => {
                     if (data && data.pkg && data.pkg.version) {
                         return data.pkg.version;
                     }
