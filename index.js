@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const { exec } = require('child_process');
 const username = require('username');
 const headHash = require('head-hash');
@@ -74,19 +75,21 @@ const suffix = (version, option) => {
 
 const buildVersion = (option) => {
     const config = Object.assign({}, option);
-    return getTagVersion({ cwd : config.cwd })
+    const cwd = path.resolve(config.cwd || '');
+
+    return getTagVersion({ cwd })
         .catch(() => {
             return headHash({
                 short : true,
-                cwd   : config.cwd
+                cwd
             });
         })
         .then(
             (version) => {
-                return suffix(version, { cwd : config.cwd });
+                return suffix(version, { cwd });
             },
             () => {
-                return readPkgUp({ cwd : config.cwd }).then((data) => {
+                return readPkgUp({ cwd }).then((data) => {
                     if (data && data.pkg && data.pkg.version) {
                         return data.pkg.version;
                     }
