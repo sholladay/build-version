@@ -35,28 +35,33 @@ const getTagVersion = (option) => {
     });
 };
 
-// An ISO 8601 date that is semver compliant. Compact syntax, without milliseconds.
+// An ISO 8601 date that is safe to use in a semver string, i.e. it does not need
+// to be escaped. We use the compact syntax, without milliseconds, to avoid the
+// dot separators that have special meaning to semver.
 const semverDate = () => {
     const pad = (number) => {
-        if (number < 10) {
-            return '0' + number;
-        }
-        return number;
+        return number > 9 ? number : '0' + number;
     };
 
     const date = new Date();
 
+    // We need to humanize the month, as getUTCMonth is a zero-based number,
+    // unlike the others.
     return [
         date.getUTCFullYear(),
         pad(date.getUTCMonth() + 1),
-        pad(date.getUTCDate())
-    ].join('') + 'T' + [
+        pad(date.getUTCDate()),
+        'T',
         pad(date.getUTCHours()),
         pad(date.getUTCMinutes()),
-        pad(date.getUTCSeconds())
-    ].join('') + 'Z';
+        pad(date.getUTCSeconds()),
+        'Z'
+    ].join('');
 };
 
+// Help identify dirty builds, those that differ from the latest commit.
+// If the working directory is dirty, append the username and date to
+// the version string, to make it stand out.
 const suffix = (version, option) => {
     return isDirty(option).then((dirty) => {
         if (!dirty) {
