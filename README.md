@@ -27,8 +27,44 @@ Get a version to use when writing the build.
 ```js
 buildVersion().then((version) => {
     console.log(version);
+    // '1.0.0'
 });
 ```
+
+## API
+
+### buildVersion(option)
+
+Returns a promise for the first successful of the following:
+
+1. A release tag, if the most recent commit is a release.
+2. The short hash of the most recent commit.
+3. The version from package.json, if not in a git repository.
+
+If in a git repository and the working directory is dirty, the username and date are appended to the version. This makes dirty versions stand out and provides useful context for what might be different about the build.
+
+For example: `1.0.0+sholladay.20161022T095547Z` or `a420250+sholladay.20161022T095547Z`
+
+#### option
+
+Type: `object`.
+
+##### cwd
+
+Type: `string`<br>
+Default: `process.cwd()`
+
+The parent directory of the build root.
+
+## Related
+
+ - [delivr](https://github.com/sholladay/delivr) - Build your code and ship it to S3.
+ - [build-files](https://github.com/sholladay/build-files) - Read the files from your build.
+ - [build-keys](https://github.com/sholladay/build-keys) - Get the paths of files from your build.
+ - [build-dir](https://github.com/sholladay/build-dir) - Get a place to put your build.
+ - [build-data](https://github.com/sholladay/build-data) - Get metadata for your build.
+ - [build-path](https://github.com/sholladay/build-path) - Get a path for the given build.
+ - [branch-name](https://github.com/sholladay/branch-name) - Get the current branch name.
 
 ## Contributing
 
