@@ -28,10 +28,7 @@ const isDirty = (option) => {
 const getTagVersion = (option) => {
     return git('describe --exact-match HEAD', option).then((tag) => {
         const prefix = 'v';
-        if (tag.startsWith(prefix)) {
-            return tag.substring(prefix.length);
-        }
-        return tag;
+        return tag.startsWith(prefix) ? tag.substring(prefix.length) : tag;
     });
 };
 
@@ -68,12 +65,11 @@ const suffix = (version, option) => {
             return version;
         }
         return username().then((name) => {
-            const buildDataStart = '+';
-            const buildDataSeparator = '.';
-            const prefix = version.includes(buildDataStart) ? buildDataSeparator : buildDataStart;
-            const data = name + buildDataSeparator + semverDate();
-            // We attach or append to "build data" as defined by semver.
-            return version + prefix + data;
+            const startMarker = '+';
+            const fieldSeparator = '.';
+            const prefix = version.includes(startMarker) ? fieldSeparator : startMarker;
+            // Attach or append to "build data", as defined by semver.
+            return version + prefix + name + fieldSeparator + semverDate();
         });
     });
 };
