@@ -47,7 +47,7 @@ For example: `1.0.0+sholladay.20161022T095547Z` or `a420250+sholladay.20161022T0
 
 #### option
 
-Type: `object`.
+Type: `object`
 
 ##### cwd
 
