@@ -15,8 +15,19 @@ const del = (filePath, option) => {
 };
 
 const git = async (command, option) => {
-    const config = Object.assign({}, option);
-    const stdout = await pify(exec)('git ' + command, { cwd : config.cwd });
+    const config = Object.assign(
+        {
+            // Tests will fail in CI without an identity.
+            env : {
+                GIT_AUTHOR_NAME     : 'Test',
+                GIT_AUTHOR_EMAIL    : 'test@example.com',
+                GIT_COMMITTER_NAME  : 'Test',
+                GIT_COMMITTER_EMAIL : 'test@example.com'
+            }
+        },
+        option
+    );
+    const stdout = await pify(exec)('git ' + command, config);
     return stdout.trimRight();
 };
 
