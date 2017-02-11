@@ -35,6 +35,7 @@
   "devDependencies": {
     "ava": "^0.18.0",
     "eslint-config-tidy": "^0.4.1",
+    "mkdirtemp": "^1.0.0",
     "pify": "^2.3.0",
     "rimraf": "^2.5.4",
     "semver-regex": "^1.0.0",

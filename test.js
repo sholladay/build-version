@@ -1,4 +1,3 @@
-import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
@@ -6,6 +5,7 @@ import test from 'ava';
 import pify from 'pify';
 import rimraf from 'rimraf';
 import username from 'username';
+import mkdirtemp from 'mkdirtemp';
 import semverRegex from 'semver-regex';
 import buildVersion from '.';
 
@@ -53,15 +53,11 @@ const writePkg = (version, cwd) => {
     return pify(fs.writeFile)(filePath, JSON.stringify({ version }));
 };
 
-const createTempDir = () => {
-    return pify(fs.mkdtemp)(path.join(os.tmpdir(), path.sep));
-};
-
 test.beforeEach(async (t) => {
-    t.context.tempDir = await createTempDir();
+    t.context.tempDir = await mkdirtemp();
 });
 
-test.afterEach((t) => {
+test.afterEach.always((t) => {
     return del(t.context.tempDir);
 });
 
