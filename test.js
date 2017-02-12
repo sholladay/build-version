@@ -1,18 +1,16 @@
+import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
+import childProcess from 'child_process';
 import test from 'ava';
-import pify from 'pify';
-import rimraf from 'rimraf';
+import writePkg from 'write-pkg';
 import username from 'username';
 import mkdirtemp from 'mkdirtemp';
 import semverRegex from 'semver-regex';
 import buildVersion from '.';
 
-const del = (filePath, option) => {
-    const config = Object.assign({ glob : false }, option);
-    return pify(rimraf)(filePath, config);
-};
+const exec = promisify(childProcess.exec);
+const writeFile = promisify(fs.writeFile);
 
 const git = async (command, option) => {
     const config = Object.assign(
@@ -27,7 +25,7 @@ const git = async (command, option) => {
         },
         option
     );
-    const stdout = await pify(exec)('git ' + command, config);
+    const { stdout } = await exec('git ' + command, config);
     return stdout.trimRight();
 };
 
@@ -37,7 +35,7 @@ const initRepo = (cwd) => {
 
 const commit = async (cwd) => {
     const filePath = path.resolve(cwd, 'foo.txt');
-    await pify(fs.writeFile)(filePath, 'testing 123');
+    await writeFile(filePath, 'testing 123');
     await git('add .', { cwd });
     const stdout = await git('commit -m weee --no-verify', { cwd });
     // Return the commit hash.
@@ -48,20 +46,7 @@ const tag = (version, cwd) => {
     return git('tag -a -m hooray ' + version, { cwd });
 };
 
-const writePkg = (version, cwd) => {
-    const filePath = path.resolve(cwd, 'package.json');
-    return pify(fs.writeFile)(filePath, JSON.stringify({ version }));
-};
-
-test.beforeEach(async (t) => {
-    t.context.tempDir = await mkdirtemp();
-});
-
-test.afterEach.always((t) => {
-    return del(t.context.tempDir);
-});
-
-test('buildVersion() basic specification', async (t) => {
+test('buildVersion() basics', async (t) => {
     const version = await buildVersion();
     t.is(typeof version, 'string');
     // Must be at least as long as the shortest valid semver. Commit hashes are longer.
@@ -93,79 +78,79 @@ test('buildVersion() basic specification', async (t) => {
 });
 
 test('git tag semver', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
-    await commit(tempDir);
-    await tag('v1.2.3', tempDir);
+    await initRepo(cwd);
+    await commit(cwd);
+    await tag('v1.2.3', cwd);
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     t.is(version, '1.2.3');
 });
 
 test('git commit hash', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
-    const hash = await commit(tempDir);
+    await initRepo(cwd);
+    const hash = await commit(cwd);
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     t.is(version, hash);
 });
 
 test('package.json semver', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await writePkg('2.0.0', tempDir);
+    await writePkg(cwd, { version : '2.0.0' });
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     t.is(version, '2.0.0');
 });
 
 test('package.json semver in repo without commit', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await writePkg('2.0.0', tempDir);
+    await writePkg(cwd, { version : '2.0.0' });
     await initRepo();
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     t.is(version, '2.0.0');
 });
 
 test('prefer tag over package.json', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
-    await writePkg('2.0.0', tempDir);
-    await commit(tempDir);
-    await tag('v1.2.3', tempDir);
+    await initRepo(cwd);
+    await writePkg(cwd, { version : '2.0.0' });
+    await commit(cwd);
+    await tag('v1.2.3', cwd);
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     t.not(version, '2.0.0');
     t.is(version, '1.2.3');
 });
 
 test('prefer commit hash over package.json', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
-    await writePkg('2.0.0', tempDir);
-    const hash = await commit(tempDir);
+    await initRepo(cwd);
+    await writePkg(cwd, { version : '2.0.0' });
+    const hash = await commit(cwd);
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     t.not(version, '2.0.0');
     t.is(version, hash);
 });
 
 test('dirty tag', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
-    await commit(tempDir);
-    await tag('v1.2.3', tempDir);
-    await writePkg('2.0.0', tempDir);
+    await initRepo(cwd);
+    await commit(cwd);
+    await tag('v1.2.3', cwd);
+    await writePkg(cwd, { version : '2.0.0' });
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     const user = await username();
     const lastDot = version.lastIndexOf('.');
     const notDate = version.substring(0, lastDot);
@@ -177,13 +162,13 @@ test('dirty tag', async (t) => {
 });
 
 test('dirty commit hash', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
-    const hash = await commit(tempDir);
-    await writePkg('2.0.0', tempDir);
+    await initRepo(cwd);
+    const hash = await commit(cwd);
+    await writePkg(cwd, { version : '2.0.0' });
 
-    const version = await buildVersion({ cwd : tempDir });
+    const version = await buildVersion({ cwd });
     const user = await username();
     const parts = version.split('.');
     const [notDate, dateStr] = parts;
@@ -195,15 +180,16 @@ test('dirty commit hash', async (t) => {
 });
 
 test('throw when no package or repo exists', async (t) => {
-    const err = await t.throws(buildVersion({ cwd : t.context.tempDir }), TypeError);
+    const cwd = await mkdirtemp();
+    const err = await t.throws(buildVersion({ cwd }), TypeError);
     t.is(err.message, 'Unable to determine a build version.');
 });
 
 test('throw when no package or commit exists', async (t) => {
-    const { tempDir } = t.context;
+    const cwd = await mkdirtemp();
 
-    await initRepo(tempDir);
+    await initRepo(cwd);
 
-    const err = await t.throws(buildVersion({ cwd : tempDir }), TypeError);
+    const err = await t.throws(buildVersion({ cwd }), TypeError);
     t.is(err.message, 'Unable to determine a build version.');
 });

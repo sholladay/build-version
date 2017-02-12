@@ -1,6 +1,6 @@
-# build-version [![Build status for build-version on Circle CI.](https://img.shields.io/circleci/project/sholladay/build-version/master.svg "Circle Build Status")](https://circleci.com/gh/sholladay/build-version "Build Version Builds")
+# build-version [![Build status for build-version](https://img.shields.io/circleci/project/sholladay/build-version/master.svg "Build Status")](https://circleci.com/gh/sholladay/build-version "Builds")
 
-> Get a version for your build.
+> Get a version for your build
 
 ## Why?
 
@@ -35,7 +35,7 @@ buildVersion().then((version) => {
 
 ### buildVersion(option)
 
-Returns a promise for the first successful of the following:
+Returns a `Promise` for the first successful of the following:
 
 1. A release tag, if the most recent commit is a release.
 2. The short hash of the most recent commit.
@@ -54,21 +54,21 @@ Type: `object`
 Type: `string`<br>
 Default: `process.cwd()`
 
-The parent directory of the build root.
+Parent directory of the build root.
 
 ## Related
 
- - [delivr](https://github.com/sholladay/delivr) - Build your code and ship it to S3.
- - [build-files](https://github.com/sholladay/build-files) - Read the files from your build.
- - [build-keys](https://github.com/sholladay/build-keys) - Get the paths of files from your build.
- - [build-dir](https://github.com/sholladay/build-dir) - Get a place to put your build.
- - [build-data](https://github.com/sholladay/build-data) - Get metadata for your build.
- - [build-path](https://github.com/sholladay/build-path) - Get a path for the given build.
- - [branch-name](https://github.com/sholladay/branch-name) - Get the current branch name.
+ - [delivr](https://github.com/sholladay/delivr) - Build your code and ship it to [S3](https://aws.amazon.com/s3/)
+ - [build-files](https://github.com/sholladay/build-files) - Read the files from your build
+ - [build-keys](https://github.com/sholladay/build-keys) - Get the paths of files from your build
+ - [build-dir](https://github.com/sholladay/build-dir) - Get a place to put your build
+ - [build-data](https://github.com/sholladay/build-data) - Get metadata for your build
+ - [build-path](https://github.com/sholladay/build-path) - Get a path for the given build
+ - [branch-name](https://github.com/sholladay/branch-name) - Get the current branch name
 
 ## Contributing
 
-See our [contributing guidelines](https://github.com/sholladay/build-version/blob/master/CONTRIBUTING.md "The guidelines for participating in this project.") for more details.
+See our [contributing guidelines](https://github.com/sholladay/build-version/blob/master/CONTRIBUTING.md "Guidelines for participating in this project") for more details.
 
 1. [Fork it](https://github.com/sholladay/build-version/fork).
 2. Make a feature branch: `git checkout -b my-new-feature`
@@ -78,6 +78,6 @@ See our [contributing guidelines](https://github.com/sholladay/build-version/blo
 
 ## License
 
-[MPL-2.0](https://github.com/sholladay/build-version/blob/master/LICENSE "The license for build-version.") © [Seth Holladay](http://seth-holladay.com "Author of build-version.")
+[MPL-2.0](https://github.com/sholladay/build-version/blob/master/LICENSE "License for build-version") © [Seth Holladay](https://seth-holladay.com "Author of build-version")
 
 Go make something, dang it.

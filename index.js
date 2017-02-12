@@ -1,35 +1,29 @@
 'use strict';
 
+const { promisify } = require('util');
 const path = require('path');
-const { exec } = require('child_process');
+const childProcess = require('child_process');
 const username = require('username');
 const headHash = require('head-hash');
 const readPkgUp = require('read-pkg-up');
 
-const git = (command, option) => {
-    const config = Object.assign({}, option);
-    return new Promise((resolve, reject) => {
-        exec('git ' + command, { cwd : config.cwd }, (err, stdout) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(stdout.trimRight());
-        });
-    });
+const exec = promisify(childProcess.exec);
+
+const git = async (command, option) => {
+    const { cwd } = Object.assign({}, option);
+    const { stdout } = await exec('git ' + command, { cwd });
+    return stdout.trimRight();
 };
 
-const isDirty = (option) => {
-    return git('status --porcelain', option).then((status) => {
-        return status !== '';
-    });
+const isDirty = async (option) => {
+    const status = await git('status --porcelain', option);
+    return status !== '';
 };
 
-const getTagVersion = (option) => {
-    return git('describe --exact-match HEAD', option).then((tag) => {
-        const prefix = 'v';
-        return tag.startsWith(prefix) ? tag.substring(prefix.length) : tag;
-    });
+const getTagVersion = async (option) => {
+    const tag = await git('describe --exact-match HEAD', option);
+    const prefix = 'v';
+    return tag.startsWith(prefix) ? tag.substring(prefix.length) : tag;
 };
 
 // An ISO 8601 date that is safe to use in a semver string, i.e. it does not need
@@ -59,19 +53,17 @@ const semverDate = () => {
 // Help identify dirty builds, those that differ from the latest commit.
 // If the working directory is dirty, append the username and date to
 // the version string, to make it stand out.
-const suffix = (version, option) => {
-    return isDirty(option).then((dirty) => {
-        if (!dirty) {
-            return version;
-        }
-        return username().then((name) => {
-            const startMarker = '+';
-            const fieldSeparator = '.';
-            const prefix = version.includes(startMarker) ? fieldSeparator : startMarker;
-            // Attach or append to "build data", as defined by semver.
-            return version + prefix + name + fieldSeparator + semverDate();
-        });
-    });
+const suffix = async (version, option) => {
+    const dirty = await isDirty(option);
+    if (!dirty) {
+        return version;
+    }
+    const name = await username();
+    const startMarker = '+';
+    const fieldSeparator = '.';
+    const prefix = version.includes(startMarker) ? fieldSeparator : startMarker;
+    // Attach or append to "build data", as defined by semver.
+    return version + prefix + name + fieldSeparator + semverDate();
 };
 
 const buildVersion = (option) => {
@@ -89,15 +81,12 @@ const buildVersion = (option) => {
             (version) => {
                 return suffix(version, { cwd });
             },
-            () => {
-                return readPkgUp({ cwd }).then((data) => {
-                    if (data && data.pkg && data.pkg.version) {
-                        return data.pkg.version;
-                    }
-                    throw new TypeError(
-                        'Unable to determine a build version.'
-                    );
-                });
+            async () => {
+                const data = await readPkgUp({ cwd });
+                if (data && data.pkg && data.pkg.version) {
+                    return data.pkg.version;
+                }
+                throw new TypeError('Unable to determine a build version.');
             }
         );
 };

@@ -1,57 +1,56 @@
 {
-  "name": "build-version",
-  "version": "1.0.0",
-  "description": "Get a version for your build.",
-  "homepage": "https://github.com/sholladay/build-version",
-  "main": "index.js",
-  "author": {
-    "name": "Seth Holladay",
-    "url": "http://seth-holladay.com",
-    "email": "me@seth-holladay.com"
-  },
-  "scripts": {
-    "test": "xo && ava"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:sholladay/build-version.git"
-  },
-  "bugs": {
-    "url": "https://github.com/sholladay/build-version/issues",
-    "email": "me@seth-holladay.com"
-  },
-  "engines": {
-    "node": ">=6"
-  },
-  "license": "MPL-2.0",
-  "files": [
-    "index.js"
-  ],
-  "dependencies": {
-    "head-hash": "^0.2.3",
-    "read-pkg-up": "^2.0.0",
-    "username": "^2.2.2"
-  },
-  "devDependencies": {
-    "ava": "^0.18.0",
-    "eslint-config-tidy": "^0.4.1",
-    "mkdirtemp": "^1.0.0",
-    "pify": "^2.3.0",
-    "rimraf": "^2.5.4",
-    "semver-regex": "^1.0.0",
-    "xo": "^0.17.1"
-  },
-  "keywords": [
-    "compile",
-    "build",
-    "builds",
-    "rev",
-    "hash",
-    "package",
-    "version",
-    "tooling"
-  ],
-  "xo": {
-    "extend": "tidy"
-  }
+    "name": "build-version",
+    "version": "1.0.0",
+    "description": "Get a version for your build",
+    "homepage": "https://github.com/sholladay/build-version",
+    "main": "index.js",
+    "author": {
+        "name": "Seth Holladay",
+        "url": "https://seth-holladay.com",
+        "email": "me@seth-holladay.com"
+    },
+    "scripts": {
+        "test": "xo && ava"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:sholladay/build-version.git"
+    },
+    "bugs": {
+        "url": "https://github.com/sholladay/build-version/issues",
+        "email": "me@seth-holladay.com"
+    },
+    "engines": {
+        "node": ">=8"
+    },
+    "license": "MPL-2.0",
+    "files": [
+        "index.js"
+    ],
+    "dependencies": {
+        "head-hash": "^0.3.0",
+        "read-pkg-up": "^2.0.0",
+        "username": "^3.0.0"
+    },
+    "devDependencies": {
+        "ava": "^0.22.0",
+        "eslint-config-tidy": "^0.5.0",
+        "mkdirtemp": "^1.0.0",
+        "semver-regex": "^1.0.0",
+        "write-pkg": "^3.1.0",
+        "xo": "^0.18.2"
+    },
+    "keywords": [
+        "compile",
+        "build",
+        "builds",
+        "rev",
+        "hash",
+        "package",
+        "version",
+        "tooling"
+    ],
+    "xo": {
+        "extend": "tidy"
+    }
 }
