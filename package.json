@@ -30,7 +30,7 @@
     "dependencies": {
         "head-hash": "^0.3.0",
         "read-pkg-up": "^2.0.0",
-        "username": "^3.0.0"
+        "username": "^4.1.0"
     },
     "devDependencies": {
         "ava": "^0.22.0",
